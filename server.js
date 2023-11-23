@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import User from './user.js';
+import jwt from 'jsonwebtoken';
 dotenv.config();
 import OpenAI from 'openai';
 const app = express();
@@ -66,10 +67,15 @@ app.post('/login', async (req, res) => {
 			return res.status(401).json({ message: 'Invalid credentials' });
 		}
 
-		// Generate a token (you need to implement this function)
-		const token = generateToken(user._id);
-
-		res.json({ token });
+		const secretKey = process.env.JWT_SECRET
+		// Generate a token
+		const token = jwt.sign(
+			{ userId: user._id, email: user.email },
+			secretKey,
+			{ expiresIn: '5m' },
+		);
+		// Send a successful login message with the token
+		res.status(200).json({ message: 'Login successful', token });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: 'Internal server error' });
