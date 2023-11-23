@@ -11,10 +11,19 @@ const app = express();
 const port = process.env.PORT;
 
 // Connect to MongoDB
-mongoose
-	.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-	.then(() => console.log('MongoDB Connected'))
-	.catch((err) => console.error(err));
+const connectToMongoDB = async () => {
+	try {
+		await mongoose.connect(process.env.MONGO_URI, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+		});
+		console.log('MongoDB Connected');
+	} catch (error) {
+		console.error('MongoDB Connection Error:', error.message);
+	}
+};
+
+connectToMongoDB();
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
