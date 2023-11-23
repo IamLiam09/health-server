@@ -8,11 +8,11 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 import OpenAI from 'openai';
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 // Connect to MongoDB
 mongoose
-	.connect(process.env.MONGO_URI)
+	.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 	.then(() => console.log('MongoDB Connected'))
 	.catch((err) => console.error(err));
 
@@ -67,13 +67,11 @@ app.post('/login', async (req, res) => {
 			return res.status(401).json({ message: 'Invalid credentials' });
 		}
 
-		const secretKey = process.env.JWT_SECRET
+		const secretKey = process.env.JWT_SECRET;
 		// Generate a token
-		const token = jwt.sign(
-			{ userId: user._id, email: user.email },
-			secretKey,
-			{ expiresIn: '5m' },
-		);
+		const token = jwt.sign({ userId: user._id, email: user.email }, secretKey, {
+			expiresIn: '5m',
+		});
 		// Send a successful login message with the token
 		res.status(200).json({ message: 'Login successful', token });
 	} catch (error) {
