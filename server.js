@@ -80,6 +80,13 @@ app.post('/register', async (req, res) => {
 		// Hash the password
 		const hashedPassword = await bcrypt.hash(password, 10);
 
+		// Check if the username is already in use
+		const existingUsername = await User.findOne({ username });
+
+		if (existingUsername) {
+			// Return 409 status if the username is already in use
+			return res.status(409).json({ message: 'Invalid credentials' });
+		}
 		// Save the user to MongoDB
 		const newUser = new User({ username, email, password: hashedPassword });
 		await newUser.save();
