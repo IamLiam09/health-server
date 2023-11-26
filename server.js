@@ -5,10 +5,31 @@ import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import User from './user.js';
 import jwt from 'jsonwebtoken';
+import cors from 'cors';
 dotenv.config();
 import OpenAI from 'openai';
 const app = express();
 const port = process.env.PORT;
+
+// Define a whitelist of allowed origins
+const whitelist = ['http://healthpadi.netlify.app'];
+
+// Configure CORS options
+const corsOptions = {
+	origin: (origin, callback) => {
+		// Check if the origin is in the whitelist or if it's a same-origin request
+		if (whitelist.includes(origin) || !origin) {
+			callback(null, true);
+		} else {
+			callback(new Error('Not allowed by CORS'));
+		}
+	},
+	methods: ['GET', 'POST'], // Specify the allowed HTTP methods
+	optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+// Enable CORS with the configured options
+app.use(cors(corsOptions));
 
 // Connect to MongoDB
 const connectToMongoDB = async () => {
@@ -48,13 +69,19 @@ app.post('/register', async (req, res) => {
 	const { username, email, password } = req.body;
 
 	// Validate the data
-
-	// Hash the password
-	const hashedPassword = await bcrypt.hash(password, 10);
-
-	// Save the user to MongoDB
-	const newUser = new User({ username, email, password: hashedPassword });
 	try {
+		// Check if the email is already registered
+		const existingUser = await User.findOne({ email });
+
+		if (existingUser) {
+			// Return 409 status if the email is already registered
+			return res.status(409).json({ message: 'Email already registered' });
+		}
+		// Hash the password
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		// Save the user to MongoDB
+		const newUser = new User({ username, email, password: hashedPassword });
 		await newUser.save();
 		res.status(201).json({ message: 'User registered successfully' });
 	} catch (error) {
