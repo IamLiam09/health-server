@@ -11,8 +11,6 @@ import OpenAI from 'openai';
 const app = express();
 const port = process.env.PORT;
 
-// Define a whitelist of allowed origins
-const whitelist = ['http://healthpadi.netlify.app'];
 
 // Configure CORS options
 const corsOptions = {
@@ -27,6 +25,9 @@ const corsOptions = {
 	methods: ['GET', 'POST'], // Specify the allowed HTTP methods
 	optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
+
+// Define a whitelist of allowed origins
+const whitelist = ['https://healthpadi.netlify.app'];
 
 // Enable CORS with the configured options
 app.use(cors(corsOptions));
