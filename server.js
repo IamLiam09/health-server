@@ -11,7 +11,7 @@ import OpenAI from 'openai';
 const app = express();
 const port = process.env.PORT;
 
-const whitelist = ['https://healthpal.netlify.app/', 'http://localhost:3000'];
+const whitelist = ['https://healthpal.netlify.app', 'http://localhost:3000'];
 
 // Configure CORS options
 const corsOptions = {
