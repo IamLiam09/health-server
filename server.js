@@ -11,6 +11,7 @@ import OpenAI from 'openai';
 const app = express();
 const port = process.env.PORT;
 
+const whitelist = ['https://healthpadi.netlify.app'];
 
 // Configure CORS options
 const corsOptions = {
@@ -26,11 +27,8 @@ const corsOptions = {
 	optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-// Define a whitelist of allowed origins
-const whitelist = ['https://healthpadi.netlify.app'];
-
-// Enable CORS with the configured options
 app.use(cors(corsOptions));
+
 
 // Connect to MongoDB
 const connectToMongoDB = async () => {
