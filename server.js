@@ -32,15 +32,16 @@ app.use(cors(corsOptions));
 
 // Connect to MongoDB
 const connectToMongoDB = async () => {
-	try {
-		await mongoose.connect(process.env.MONGO_URI, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		});
-		console.log('MongoDB Connected');
-	} catch (error) {
-		console.error('MongoDB Connection Error:', error.message);
-	}
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+			serverSelectionTimeoutMS: 5000,
+        });
+        console.log('MongoDB Connected');
+    } catch (error) {
+        console.error('MongoDB Connection Error:', error.message);
+    }
 };
 
 connectToMongoDB();
@@ -127,6 +128,12 @@ app.get('/api', (req, res) => {
 	res.json('working');
 });
 
-app.listen(port, () => {
-	console.log(`Server is running on port ${port}`);
-});
+const startServer = async () => {
+    await connectToMongoDB();
+
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+};
+
+startServer();
